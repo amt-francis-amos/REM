@@ -1,0 +1,182 @@
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+};
+
+const Donate = () => {
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const handlePayment = (e) => {
+    e.preventDefault();
+  
+    if (!email || !amount || !firstName || !lastName) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+  
+    // Ensure Paystack script is loaded
+    if (!window.PaystackPop) {
+      toast.error("Payment gateway is not available. Please try again.");
+      return;
+    }
+  
+    let handler = window.PaystackPop.setup({
+      key: "pk_live_4e354fe66089b2677910f80a9a1b6818a66fbd42",
+      email,
+      amount: amount * 100,
+      currency: "GHS",
+      ref: "" + Math.floor(Math.random() * 1000000000 + 1),
+      metadata: {
+        custom_fields: [
+          {
+            display_name: "Donor Name",
+            variable_name: "donor_name",
+            value: `${firstName} ${lastName}`,
+          },
+        ],
+      },
+      onClose: function () {
+        toast.warn("Payment process was cancelled.");
+      },
+      callback: function (response) {
+        toast.success(`Payment successful! Ref: ${response.reference}`);
+      },
+    });
+  
+    handler.openIframe();
+  };
+  
+  
+
+  return (
+    <motion.section
+      className="bg-gray-100 min-h-screen py-12 px-6"
+      initial="hidden"
+      animate="visible"
+    >
+
+      <ToastContainer position="top-center" autoClose={3000} />
+
+   
+      <motion.div className="relative" variants={fadeIn}>
+        <div className="bg-gray-800 text-white py-16 text-center rounded-lg shadow-lg">
+          <motion.h1 className="text-4xl font-bold" variants={fadeIn}>
+            Always Give Without Remembering,  
+            <br /> Always Receive Without Forgetting
+          </motion.h1>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12"
+        variants={fadeIn}
+      >
+       
+        <div className="bg-white p-8 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+            Fill in the Form to Donate
+          </h2>
+          <form onSubmit={handlePayment} className="space-y-4">
+            <div>
+              <label className="block text-gray-600 font-medium">Email Address</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full p-3 border rounded-lg "
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-600 font-medium">Amount (GHS)</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                className="w-full p-3 border rounded-lg "
+                required
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-600 font-medium">First Name</label>
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  className="w-full p-3 border rounded-lg"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-600 font-medium">Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className="w-full p-3 border rounded-lg"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 transition"
+            >
+              Donate Now
+            </button>
+          </form>
+        </div>
+
+        {/* Bank Details */}
+        <div className="bg-gray-50 p-8 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+            Bank Details
+          </h2>
+          <p className="text-gray-700 text-lg">
+            <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA  
+            <br /> Swift Code: SCBLUS33  
+            <br /> Routing: 026002561
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Bank:</strong> Republic Bank Ghana Limited  
+            <br /> Account Number: 3582026282001  
+            <br /> Swift Code: HFCAGHAC
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Name:</strong> Rural Evangelism Missions  
+            <br /> Account Number: 0266907481018
+          </p>
+
+          {/* Contact Info */}
+          <div className="mt-6 text-center">
+            <p className="text-gray-700">
+              <strong>Email:</strong> 
+              <a href="mailto:revangelismmissions25@yahoo.com" className="text-blue-500 hover:underline">
+                revangelismmissions25@yahoo.com
+              </a>
+            </p>
+            <p className="text-gray-700">
+              <strong>Phone:</strong> +233 544 067 530
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.section>
+  );
+};
+
+export default Donate;
