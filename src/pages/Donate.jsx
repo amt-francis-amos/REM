@@ -183,6 +183,25 @@ const Donate = () => {
             </button>
           </form>
         </div>
+        <div className="bg-gray-50 p-8 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+            Bank Details
+          </h2>
+          <p className="text-gray-700 text-lg">
+            <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA
+            <br /> Swift Code: SCBLUS33
+            <br /> Routing: 026002561
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Bank:</strong> Republic Bank Ghana Limited
+            <br /> Account Number: 3582026282001
+            <br /> Swift Code: HFCAGHAC
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Name:</strong> Rural Evangelism Missions
+            <br /> Account Number: 0266907481018
+          </p>
+        </div>
       </motion.div>
     </motion.section>
   );
