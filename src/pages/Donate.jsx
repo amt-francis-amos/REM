@@ -17,7 +17,7 @@ const Donate = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(""); // Capture Mobile Number
+
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -33,7 +33,7 @@ const Donate = () => {
   const handlePayment = (e) => {
     e.preventDefault();
 
-    if (!email || !amount || !firstName || !lastName || (paymentMethod === "momo" && !phoneNumber)) {
+    if (!email || !amount || !firstName || !lastName) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -66,11 +66,6 @@ const Donate = () => {
             display_name: "Donor Name",
             variable_name: "donor_name",
             value: `${firstName} ${lastName}`, 
-          },
-          {
-            display_name: "Phone Number",
-            variable_name: "phone_number",
-            value: phoneNumber, 
           },
         ],
       },
@@ -184,19 +179,7 @@ const Donate = () => {
                 <option value="momo">Mobile Money</option>
               </select>
             </div>
-            {paymentMethod === "momo" && (
-              <div>
-                <label className="block text-gray-600 font-medium">Mobile Number</label>
-                <input
-                  type="tel"
-                  placeholder="Enter Mobile Number"
-                  className="w-full p-3 border rounded-lg"
-                  required
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </div>
-            )}
+
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 transition"
