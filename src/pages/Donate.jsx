@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +17,13 @@ const Donate = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const convertAmount = () => {
     return currency === "USD" ? parseFloat(amount) * exchangeRate : parseFloat(amount);
@@ -45,13 +52,15 @@ const Donate = () => {
       return;
     }
 
+    let channels = paymentMethod === "momo" ? ["mobile_money"] : ["card"];
+
     let handler = window.PaystackPop.setup({
       key: "pk_live_4e354fe66089b2677910f80a9a1b6818a66fbd42",
       email,
       amount: convertAmount() * 100, 
       currency,
       ref: "DONATE-" + Math.floor(Math.random() * 1000000000 + 1),
-      channels: ["card", "mobile_money"], 
+      channels,
       metadata: {
         custom_fields: [
           {
@@ -91,7 +100,6 @@ const Donate = () => {
         className="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12"
         variants={fadeIn}
       >
-        
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
             Fill in the Form to Donate
@@ -162,7 +170,6 @@ const Donate = () => {
               </div>
             </div>
 
-         
             <div>
               <label className="block text-gray-600 font-medium">Payment Method</label>
               <select
@@ -191,15 +198,6 @@ const Donate = () => {
             <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA
             <br /> Swift Code: SCBLUS33
             <br /> Routing: 026002561
-          </p>
-          <p className="text-gray-700 text-lg mt-4">
-            <strong>Beneficiary Bank:</strong> Republic Bank Ghana Limited
-            <br /> Account Number: 3582026282001
-            <br /> Swift Code: HFCAGHAC
-          </p>
-          <p className="text-gray-700 text-lg mt-4">
-            <strong>Beneficiary Name:</strong> Rural Evangelism Missions
-            <br /> Account Number: 0266907481018
           </p>
         </div>
       </motion.div>
