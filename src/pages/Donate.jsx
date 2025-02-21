@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
+import { loadScript } from "paystack-js";
 import "react-toastify/dist/ReactToastify.css";
 
 const fadeIn = {
@@ -18,19 +19,11 @@ const Donate = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Load Paystack script dynamically
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
   const convertAmount = () => {
     return currency === "USD" ? parseFloat(amount) * exchangeRate : parseFloat(amount);
   };
 
-  const handlePayment = (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
 
     if (!email || !amount || !firstName || !lastName) {
@@ -43,7 +36,9 @@ const Donate = () => {
       return;
     }
 
-    if (!window.PaystackPop) {
+    const paystack = await loadScript();
+
+    if (!paystack) {
       toast.error("Payment gateway is not available. Please try again.");
       return;
     }
@@ -53,19 +48,19 @@ const Donate = () => {
       return;
     }
 
-    let handler = window.PaystackPop.setup({
+    let handler = paystack.Pop.setup({
       key: "pk_live_4e354fe66089b2677910f80a9a1b6818a66fbd42",
       email,
-      amount: convertAmount() * 100, 
+      amount: convertAmount() * 100,
       currency,
       ref: "DONATE-" + Math.floor(Math.random() * 1000000000 + 1),
-      channels: paymentMethod === "momo" ? ["mobile_money"] : ["card"],
+      channels: paymentMethod === "momo" ? ["mobile_money"] : ["card", "mobile_money"], 
       metadata: {
         custom_fields: [
           {
             display_name: "Donor Name",
             variable_name: "donor_name",
-            value: `${firstName} ${lastName}`, 
+            value: `${firstName} ${lastName}`,
           },
         ],
       },
@@ -79,11 +74,7 @@ const Donate = () => {
   };
 
   return (
-    <motion.section
-      className="bg-gray-100 min-h-screen py-12 px-6"
-      initial="hidden"
-      animate="visible"
-    >
+    <motion.section className="bg-gray-100 min-h-screen py-12 px-6" initial="hidden" animate="visible">
       <ToastContainer position="top-center" autoClose={3000} />
 
       <motion.div className="relative" variants={fadeIn}>
@@ -95,14 +86,9 @@ const Donate = () => {
         </div>
       </motion.div>
 
-      <motion.div
-        className="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12"
-        variants={fadeIn}
-      >
+      <motion.div className="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12" variants={fadeIn}>
         <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-            Fill in the Form to Donate
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">Fill in the Form to Donate</h2>
           <form onSubmit={handlePayment} className="space-y-4">
             <div>
               <label className="block text-gray-600 font-medium">Email Address</label>
@@ -138,9 +124,7 @@ const Donate = () => {
                   <option value="USD">USD (US Dollars)</option>
                 </select>
                 {currency === "USD" && (
-                  <p className="text-red-600 text-sm mt-2">
-                    ⚠️ USD transactions require Paystack approval.
-                  </p>
+                  <p className="text-red-600 text-sm mt-2">⚠️ USD transactions require Paystack approval.</p>
                 )}
               </div>
             </div>
@@ -168,6 +152,7 @@ const Donate = () => {
                 />
               </div>
             </div>
+
             <div>
               <label className="block text-gray-600 font-medium">Payment Method</label>
               <select
@@ -189,9 +174,7 @@ const Donate = () => {
           </form>
         </div>
         <div className="bg-gray-50 p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-            Bank Details
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">Bank Details</h2>
           <p className="text-gray-700 text-lg">
             <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA
             <br /> Swift Code: SCBLUS33
