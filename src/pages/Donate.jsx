@@ -40,13 +40,18 @@ const Donate = () => {
       return;
     }
 
+    if (currency === "USD") {
+      toast.error("USD transactions require special approval. Please use GHS instead.");
+      return;
+    }
+
     let handler = window.PaystackPop.setup({
       key: "pk_live_4e354fe66089b2677910f80a9a1b6818a66fbd42",
       email,
-      amount: convertAmount() * 100,
+      amount: convertAmount() * 100, 
       currency,
       ref: "DONATE-" + Math.floor(Math.random() * 1000000000 + 1),
-      channels: paymentMethod === "momo" ? ["mobile_money"] : ["card"], 
+      channels: ["card", "mobile_money"], 
       metadata: {
         custom_fields: [
           {
@@ -86,7 +91,7 @@ const Donate = () => {
         className="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12"
         variants={fadeIn}
       >
-    
+        
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
             Fill in the Form to Donate
@@ -125,6 +130,11 @@ const Donate = () => {
                   <option value="GHS">GHS (Ghana Cedis)</option>
                   <option value="USD">USD (US Dollars)</option>
                 </select>
+                {currency === "USD" && (
+                  <p className="text-red-600 text-sm mt-2">
+                    ⚠️ USD transactions require Paystack approval.
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -152,7 +162,7 @@ const Donate = () => {
               </div>
             </div>
 
-          
+         
             <div>
               <label className="block text-gray-600 font-medium">Payment Method</label>
               <select
@@ -172,27 +182,6 @@ const Donate = () => {
               Donate Now
             </button>
           </form>
-        </div>
-
-      
-        <div className="bg-gray-50 p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-            Bank Details
-          </h2>
-          <p className="text-gray-700 text-lg">
-            <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA
-            <br /> Swift Code: SCBLUS33
-            <br /> Routing: 026002561
-          </p>
-          <p className="text-gray-700 text-lg mt-4">
-            <strong>Beneficiary Bank:</strong> Republic Bank Ghana Limited
-            <br /> Account Number: 3582026282001
-            <br /> Swift Code: HFCAGHAC
-          </p>
-          <p className="text-gray-700 text-lg mt-4">
-            <strong>Beneficiary Name:</strong> Rural Evangelism Missions
-            <br /> Account Number: 0266907481018
-          </p>
         </div>
       </motion.div>
     </motion.section>
