@@ -18,6 +18,7 @@ const Donate = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
+  // Load Paystack script dynamically
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
@@ -52,21 +53,19 @@ const Donate = () => {
       return;
     }
 
-    let channels = paymentMethod === "momo" ? ["mobile_money"] : ["card"];
-
     let handler = window.PaystackPop.setup({
       key: "pk_live_4e354fe66089b2677910f80a9a1b6818a66fbd42",
       email,
       amount: convertAmount() * 100, 
       currency,
       ref: "DONATE-" + Math.floor(Math.random() * 1000000000 + 1),
-      channels,
+      channels: paymentMethod === "momo" ? ["mobile_money"] : ["card"],
       metadata: {
         custom_fields: [
           {
             display_name: "Donor Name",
             variable_name: "donor_name",
-            value: `${firstName} ${lastName}`,
+            value: `${firstName} ${lastName}`, 
           },
         ],
       },
@@ -169,7 +168,6 @@ const Donate = () => {
                 />
               </div>
             </div>
-
             <div>
               <label className="block text-gray-600 font-medium">Payment Method</label>
               <select
@@ -198,6 +196,15 @@ const Donate = () => {
             <strong>Intermediary Bank:</strong> Standard Chartered Bank, New York, USA
             <br /> Swift Code: SCBLUS33
             <br /> Routing: 026002561
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Bank:</strong> Republic Bank Ghana Limited
+            <br /> Account Number: 3582026282001
+            <br /> Swift Code: HFCAGHAC
+          </p>
+          <p className="text-gray-700 text-lg mt-4">
+            <strong>Beneficiary Name:</strong> Rural Evangelism Missions
+            <br /> Account Number: 0266907481018
           </p>
         </div>
       </motion.div>
